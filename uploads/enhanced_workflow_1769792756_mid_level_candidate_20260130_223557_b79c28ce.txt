@@ -1,0 +1,34 @@
+
+            SARAH WILLIAMS
+            Software Developer
+            
+            PROFESSIONAL EXPERIENCE:
+            Software Developer | WebTech Solutions | 2021-2024
+            • Developed web applications using React and Python Flask
+            • Worked with MySQL databases and wrote SQL queries
+            • Participated in code reviews and followed Git workflows
+            • Built responsive websites with HTML, CSS, and JavaScript
+            • Collaborated with team using Agile methodology
+            • Fixed bugs and implemented new features
+            
+            Junior Developer | LocalTech | 2020-2021
+            • Learned React and JavaScript fundamentals
+            • Assisted in building CRUD applications
+            • Worked with REST APIs and JSON data
+            • Used Bootstrap for responsive design
+            
+            TECHNICAL SKILLS:
+            Languages: Python, JavaScript, HTML, CSS, SQL
+            Frontend: React, Bootstrap, jQuery
+            Backend: Flask, basic Node.js
+            Databases: MySQL, basic MongoDB
+            Tools: Git, VS Code, npm
+            
+            EDUCATION:
+            Bachelor of Science in Computer Science | Local University | 2020
+            
+            PROJECTS:
+            • Personal Portfolio Website (React, CSS)
+            • Todo Application (React, Flask, MySQL)
+            • E-commerce Frontend (React, Bootstrap)
+            

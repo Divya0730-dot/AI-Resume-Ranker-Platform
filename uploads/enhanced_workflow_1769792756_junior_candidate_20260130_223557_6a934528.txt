@@ -1,0 +1,40 @@
+
+            ALEX CHEN
+            Junior Developer
+            
+            PROFESSIONAL EXPERIENCE:
+            Junior Developer | CodeBootcamp Graduate | 2023-2024
+            • Completed intensive 6-month coding bootcamp
+            • Built projects using HTML, CSS, JavaScript
+            • Learned React basics and component development
+            • Created simple CRUD applications
+            • Used Git for version control
+            
+            Intern | TechStartup | Summer 2023
+            • Assisted senior developers with bug fixes
+            • Learned about web development best practices
+            • Participated in daily standups
+            • Wrote basic unit tests
+            
+            TECHNICAL SKILLS:
+            Languages: JavaScript, HTML, CSS, basic Python
+            Frontend: React (beginner), Bootstrap
+            Backend: Basic Node.js
+            Databases: Basic MySQL
+            Tools: Git, VS Code
+            
+            EDUCATION:
+            Coding Bootcamp Certificate | CodeAcademy | 2023
+            Bachelor of Arts in Marketing | University | 2022
+            
+            PROJECTS:
+            • Personal Website (HTML, CSS, JavaScript)
+            • Calculator App (React)
+            • Simple Blog (HTML, CSS, JavaScript)
+            
+            EAGER TO LEARN:
+            • Advanced React and JavaScript
+            • Backend development
+            • Database design
+            • Cloud technologies
+            

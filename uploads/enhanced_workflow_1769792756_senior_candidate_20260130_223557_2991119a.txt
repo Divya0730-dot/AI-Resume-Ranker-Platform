@@ -1,0 +1,37 @@
+
+            MICHAEL JOHNSON
+            Senior Software Engineer
+            
+            PROFESSIONAL EXPERIENCE:
+            Senior Software Engineer | TechCorp Inc. | 2019-2024
+            • Led development of microservices architecture using Python, Django, and React
+            • Implemented CI/CD pipelines with Jenkins and Docker, reducing deployment time by 70%
+            • Managed PostgreSQL databases and optimized queries for 10M+ records
+            • Mentored 5 junior developers and conducted technical interviews
+            • Designed and built RESTful APIs serving 1M+ requests daily
+            • Collaborated with product teams using Agile/Scrum methodologies
+            
+            Software Engineer | StartupXYZ | 2017-2019
+            • Developed full-stack web applications using React, Node.js, and MongoDB
+            • Implemented automated testing with Jest and Cypress
+            • Worked with AWS services (EC2, S3, RDS, Lambda)
+            • Built responsive UIs with HTML5, CSS3, and Bootstrap
+            
+            TECHNICAL SKILLS:
+            Languages: Python, JavaScript, TypeScript, Java, SQL
+            Frontend: React, Angular, HTML5, CSS3, Bootstrap, jQuery
+            Backend: Django, Flask, Node.js, Express.js, Spring Boot
+            Databases: PostgreSQL, MongoDB, MySQL, Redis
+            Cloud: AWS (EC2, S3, RDS, Lambda), Docker, Kubernetes
+            DevOps: Jenkins, Git, GitHub Actions, CI/CD
+            Testing: Jest, Pytest, Cypress, Unit Testing
+            
+            EDUCATION:
+            Master of Science in Computer Science | Tech University | 2017
+            Bachelor of Science in Software Engineering | State University | 2015
+            
+            CERTIFICATIONS:
+            • AWS Certified Solutions Architect
+            • Certified Scrum Master (CSM)
+            • MongoDB Certified Developer
+            
