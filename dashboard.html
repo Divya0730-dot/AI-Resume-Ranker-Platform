@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Dashboard | AI Resume Ranker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --bg: #050b18;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --success: #00ff88;
+            --danger: #ff4b5c;
+            --warning: #ffd700;
+        }
+        
+        body {
+            background: radial-gradient(circle at top right, #101d33, var(--bg));
+            color: #e2e8f0;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .navbar {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand {
+            color: var(--primary) !important;
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: #e2e8f0 !important;
+            font-weight: 600;
+        }
+        
+        .container-fluid {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .step-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-number {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+        
+        .step-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-control, .form-control:focus {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #00cc77);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger), #ff6b7a);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 20px;
+            font-weight: 600;
+        }
+        
+        .method-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .method-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(0, 210, 255, 0.3);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(0, 210, 255, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .file-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .alert-custom {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .alert-danger {
+            background: rgba(255, 75, 92, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .alert-info {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        /* Table Styles */
+        .table-dark {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .table-dark th {
+            border-color: rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+        
+        .table-dark td {
+            border-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            vertical-align: middle;
+        }
+        
+        .table-hover tbody tr:hover {
+            background: rgba(0, 210, 255, 0.1);
+        }
+        
+        .rank-badge {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            background: rgba(255, 75, 92, 0.2);
+            color: var(--danger);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin: 2px;
+            border: 1px solid var(--danger);
+        }
+        
+        .skill-tag.high-priority {
+            background: rgba(255, 75, 92, 0.3);
+            border-color: var(--danger);
+        }
+        
+        .skill-tag.medium-priority {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--warning);
+            border-color: var(--warning);
+        }
+        
+        .skill-tag.low-priority {
+            background: rgba(0, 210, 255, 0.2);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .view-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-robot me-2"></i>AI Resume Ranker</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-link">Welcome, {{ username }}!</span>
+                <button class="btn btn-danger btn-sm ms-3" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <!-- Single Page Dashboard -->
+        <div class="step-card" id="mainDashboard">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Recruiter Dashboard</h3>
+            </div>
+            
+            <!-- Job Position Selection -->
+            <div class="mb-4">
+                <label for="jobPosition" class="form-label">Job Position *</label>
+                <select id="jobPosition" class="form-control" required onchange="onJobPositionChange()">
+                    <option value="">Choose a job position...</option>
+                    <option value="Software Engineer">Software Engineer</option>
+                    <option value="Senior Software Engineer">Senior Software Engineer</option>
+                    <option value="Full-Stack Developer">Full-Stack Developer</option>
+                    <option value="Frontend Developer">Frontend Developer</option>
+                    <option value="Backend Developer">Backend Developer</option>
+                    <option value="DevOps Engineer">DevOps Engineer</option>
+                    <option value="Data Scientist">Data Scientist</option>
+                    <option value="Data Analyst">Data Analyst</option>
+                    <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+                    <option value="Product Manager">Product Manager</option>
+                    <option value="Project Manager">Project Manager</option>
+                    <option value="UI/UX Designer">UI/UX Designer</option>
+                    <option value="Quality Assurance Engineer">Quality Assurance Engineer</option>
+                    <option value="System Administrator">System Administrator</option>
+                    <option value="Database Administrator">Database Administrator</option>
+                    <option value="Mobile Developer">Mobile Developer</option>
+                    <option value="Cloud Architect">Cloud Architect</option>
+                    <option value="Security Engineer">Security Engineer</option>
+                    <option value="Technical Lead">Technical Lead</option>
+                    <option value="Engineering Manager">Engineering Manager</option>
+                </select>
+            </div>
+
+            <!-- Job Title (appears after position selection) -->
+            <div id="jobTitleSection" class="mb-4" style="display: none;">
+                <label for="jobTitle" class="form-label">Job Title *</label>
+                <input type="text" id="jobTitle" class="form-control" 
+                       placeholder="e.g., Senior Software Engineer, Lead Data Scientist..." required>
+                <small class="text-muted">Auto-filled based on position selection, but you can customize it.</small>
+            </div>
+            <!-- Job Description Section (appears after position selection) -->
+            <div id="jobDescriptionSection" class="mb-4" style="display: none;">
+                <label class="form-label">Job Description *</label>
+                
+                <!-- Description Method Selection -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="method-card" id="manualCard" onclick="selectDescriptionMethod('manual')">
+                            <i class="fas fa-edit fa-2x mb-2" style="color: var(--primary);"></i>
+                            <h6>Manual Entry</h6>
+                            <small class="text-muted">Write your own job description</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="method-card" id="aiCard" onclick="selectDescriptionMethod('ai')">
+                            <i class="fas fa-robot fa-2x mb-2" style="color: var(--success);"></i>
+                            <h6>AI Generated</h6>
+                            <small class="text-muted">Let AI create the description</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Description Input -->
+                <div id="manualDescriptionInput" style="display: none;">
+                    <textarea id="jobDescription" class="form-control" rows="8" 
+                              placeholder="Enter the complete job description including required skills, qualifications, responsibilities, and requirements..."></textarea>
+                </div>
+
+                <!-- AI Generated Description -->
+                <div id="aiDescriptionInput" style="display: none;">
+                    <div class="mb-3">
+                        <button class="btn btn-success" id="generateDescBtn" onclick="generateJobDescription()">
+                            <i class="fas fa-magic me-2"></i>Generate Job Description with AI
+                        </button>
+                    </div>
+                    <div id="generatedDescriptionArea" style="display: none;">
+                        <textarea id="aiJobDescription" class="form-control" rows="8"></textarea>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="regenerateDescription()">
+                                <i class="fas fa-redo me-1"></i>Regenerate
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="editDescription()">
+                                <i class="fas fa-edit me-1"></i>Edit Description
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Resume Upload Section (appears after job description) -->
+            <div id="resumeUploadSection" class="mb-4" style="display: none;">
+                <label class="form-label">Upload Resumes</label>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('resumeFile').click()">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: var(--primary);"></i>
+                    <h5>Drag & Drop Resumes Here</h5>
+                    <p class="text-muted">or click to browse (PDF, DOCX only)</p>
+                    <input type="file" id="resumeFile" accept=".pdf,.docx" style="display: none;" multiple>
+                </div>
+                <div class="uploaded-files" id="uploadedFiles"></div>
+                <div id="uploadStatus" class="mt-3"></div>
+                
+                <!-- Separate Upload and Rank Buttons -->
+                <div class="d-flex gap-3 mt-3">
+                    <button class="btn btn-primary btn-lg" id="uploadBtn" onclick="uploadResumes()" disabled>
+                        <i class="fas fa-upload me-2"></i>Upload Resumes
+                    </button>
+                    <button class="btn btn-success btn-lg" id="rankBtn" onclick="rankResumes()" disabled>
+                        <i class="fas fa-chart-line me-2"></i>Rank Resumes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading" id="loadingSection" style="display: none; text-align: center; padding: 2rem;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="mt-3">Processing resumes with AI...</h5>
+            <p class="text-muted">Uploading files and analyzing candidates...</p>
+        </div>
+
+        <!-- Results Section - Table Format -->
+        <div class="step-card" id="resultsSection" style="display: none;">
+            <div class="step-header">
+                <div class="step-number"><i class="fas fa-trophy"></i></div>
+                <h3 class="step-title">Ranking Results</h3>
+            </div>
+            
+            <!-- Job Summary -->
+            <div id="jobSummary" class="alert-custom alert-info mb-4"></div>
+            
+            <!-- Results Table -->
+            <div class="table-responsive">
+                <table class="table table-dark table-hover" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Resume File Name</th>
+                            <th>Match Score</th>
+                            <th>Recommended Skills</th>
+                            <th>Development Plan</th>
+                            <th>View Resume</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Results will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn btn-primary" onclick="startOver()">
+                    <i class="fas fa-refresh me-2"></i>Start New Analysis
+                </button>
+            </div>
+        </div>
+        <!-- Resume Viewer Modal -->
+        <div class="modal fade" id="resumeModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <h5 class="modal-title" id="resumeModalTitle">Resume Content</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="resumeContent" style="white-space: pre-wrap; font-family: monospace; background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; max-height: 500px; overflow-y: auto;">
+                            <!-- Resume content will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Plan Modal -->
+        <div class="modal fade" id="developmentPlanModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content" style="background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <h5 class="modal-title" id="developmentPlanTitle">Candidate Development Plan</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                        <div id="developmentPlanContent">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="exportDevelopmentPlan()">
+                            <i class="fas fa-download me-1"></i>Export Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let selectedFiles = [];
+        let uploadedFiles = [];
+        let currentSessionId = null;  // Track current ranking session
+        let jobPosition = '';
+        let jobTitle = '';
+        let jobDescription = '';
+        let descriptionMethod = '';
+
+        // Add debug logging to button clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Dashboard loaded, setting up event listeners');
+            
+            // Add click listener to upload button for debugging
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', function(e) {
+                    console.log('🔍 Upload button clicked');
+                    console.log('   Button disabled:', uploadBtn.disabled);
+                    console.log('   Event target:', e.target);
+                    console.log('   Event type:', e.type);
+                });
+            }
+            
+            // Add listener to detect any form submissions
+            document.addEventListener('submit', function(e) {
+                console.log('🔍 Form submission detected');
+                console.log('   Form:', e.target);
+                console.log('   Preventing default to debug');
+                e.preventDefault();
+            });
+            
+            // Add listener to detect any fetch calls
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                console.log('🔍 Fetch call detected:', args[0]);
+                return originalFetch.apply(this, args);
+            };
+        });
+
+        // CRITICAL FUNCTION: Job Position Change Handler
+        function onJobPositionChange() {
+            console.log('Job position change triggered');
+            
+            const jobPositionSelect = document.getElementById('jobPosition');
+            jobPosition = jobPositionSelect.value.trim();
+            
+            console.log('Selected position:', jobPosition);
+            
+            if (jobPosition) {
+                // Do NOT clear session here - allow ranking same resumes against different jobs
+                // Session will only be cleared when user uploads new resumes or starts over
+                
+                // Show job title section and auto-fill
+                const jobTitleSection = document.getElementById('jobTitleSection');
+                const jobDescSection = document.getElementById('jobDescriptionSection');
+                
+                if (jobTitleSection) {
+                    jobTitleSection.style.display = 'block';
+                    console.log('Job title section shown');
+                }
+                
+                if (jobDescSection) {
+                    jobDescSection.style.display = 'block';
+                    console.log('Job description section shown');
+                }
+                
+                // Auto-fill job title
+                const jobTitleInput = document.getElementById('jobTitle');
+                if (jobTitleInput) {
+                    jobTitleInput.value = jobPosition;
+                    jobTitle = jobPosition;
+                }
+                
+                showAlert('Job position selected! Job title and description sections are now visible.', 'success');
+            } else {
+                hideAllSections();
+                resetForm();
+            }
+        }
+
+        // Clear current session data
+        async function clearCurrentSession() {
+            try {
+                // Clear frontend state
+                uploadedFiles = [];
+                selectedFiles = [];
+                currentSessionId = null;
+                
+                // Clear file input
+                const fileInput = document.getElementById('resumeFile');
+                if (fileInput) {
+                    fileInput.value = '';
+                }
+                
+                // Clear upload status
+                const uploadStatus = document.getElementById('uploadStatus');
+                if (uploadStatus) {
+                    uploadStatus.innerHTML = '';
+                }
+                
+                // Clear results table
+                const resultsSection = document.getElementById('resultsSection');
+                if (resultsSection) {
+                    resultsSection.style.display = 'none';
+                    // Only clear the table body, not the entire section
+                    const tableBody = resultsSection.querySelector('#resultsTableBody');
+                    if (tableBody) {
+                        tableBody.innerHTML = '';
+                    }
+                }
+                
+                // Reset buttons
+                const uploadBtn = document.getElementById('uploadBtn');
+                const rankBtn = document.getElementById('rankBtn');
+                if (uploadBtn) uploadBtn.disabled = true;
+                if (rankBtn) rankBtn.disabled = true;
+                
+                // Call backend to clear session
+                await fetch('/api/clear-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                console.log('Session cleared successfully');
+            } catch (error) {
+                console.error('Error clearing session:', error);
+            }
+        }
+
+        // Hide all sections except job position
+        function hideAllSections() {
+            const sections = ['jobTitleSection', 'jobDescriptionSection', 'resumeUploadSection'];
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        // Description Method Selection
+        function selectDescriptionMethod(method) {
+            console.log('Description method selected:', method);
+            
+            descriptionMethod = method;
+            
+            // Reset method cards
+            const manualCard = document.getElementById('manualCard');
+            const aiCard = document.getElementById('aiCard');
+            
+            if (manualCard && aiCard) {
+                manualCard.classList.remove('selected');
+                aiCard.classList.remove('selected');
+            }
+            
+            // Hide both input sections
+            const manualInput = document.getElementById('manualDescriptionInput');
+            const aiInput = document.getElementById('aiDescriptionInput');
+            
+            if (manualInput) manualInput.style.display = 'none';
+            if (aiInput) aiInput.style.display = 'none';
+            
+            if (method === 'manual') {
+                if (manualCard) manualCard.classList.add('selected');
+                if (manualInput) {
+                    manualInput.style.display = 'block';
+                    const jobDescTextarea = document.getElementById('jobDescription');
+                    if (jobDescTextarea) jobDescTextarea.focus();
+                }
+            } else if (method === 'ai') {
+                if (aiCard) aiCard.classList.add('selected');
+                if (aiInput) aiInput.style.display = 'block';
+            }
+            
+            checkFormCompletion();
+        }
+
+        // AI Job Description Generation
+        async function generateJobDescription() {
+            const generateBtn = document.getElementById('generateDescBtn');
+            const generatedArea = document.getElementById('generatedDescriptionArea');
+            const aiDescTextarea = document.getElementById('aiJobDescription');
+            
+            if (!jobPosition || !jobTitle) {
+                showAlert('Please complete job position and title first', 'danger');
+                return;
+            }
+            
+            try {
+                if (generateBtn) {
+                    generateBtn.disabled = true;
+                    generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+                }
+                
+                const response = await fetch('/api/generate-job-description', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        job_position: jobPosition,
+                        job_title: jobTitle
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    if (aiDescTextarea) {
+                        aiDescTextarea.value = result.job_description;
+                        jobDescription = result.job_description;
+                    }
+                    if (generatedArea) {
+                        generatedArea.style.display = 'block';
+                    }
+                    checkFormCompletion();
+                    showAlert('Job description generated successfully!', 'success');
+                } else {
+                    showAlert(result.error || 'Failed to generate job description', 'danger');
+                }
+            } catch (error) {
+                console.error('Generation error:', error);
+                showAlert('Failed to generate job description. Please try manual entry.', 'danger');
+            } finally {
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Generate Job Description with AI';
+                }
+            }
+        }
+
+        function regenerateDescription() {
+            generateJobDescription();
+        }
+
+        function editDescription() {
+            const aiDescTextarea = document.getElementById('aiJobDescription');
+            if (aiDescTextarea) {
+                aiDescTextarea.focus();
+            }
+        }
+
+        // Form Completion Check
+        function checkFormCompletion() {
+            let isComplete = false;
+            
+            if (descriptionMethod === 'manual') {
+                const manualDesc = document.getElementById('jobDescription');
+                if (manualDesc) {
+                    jobDescription = manualDesc.value.trim();
+                    isComplete = jobPosition && jobTitle && jobDescription;
+                }
+            } else if (descriptionMethod === 'ai') {
+                const aiDesc = document.getElementById('aiJobDescription');
+                if (aiDesc) {
+                    jobDescription = aiDesc.value.trim();
+                    isComplete = jobPosition && jobTitle && jobDescription;
+                }
+            }
+            
+            const resumeSection = document.getElementById('resumeUploadSection');
+            const rankBtn = document.getElementById('rankBtn');
+            
+            if (isComplete && resumeSection) {
+                resumeSection.style.display = 'block';
+                showAlert('Job details completed! You can now upload resumes or rank existing resumes.', 'success');
+                
+                // Enable rank button when job details are complete (allows legacy mode)
+                if (rankBtn) {
+                    rankBtn.disabled = false;
+                }
+            } else if (resumeSection) {
+                resumeSection.style.display = 'none';
+                
+                // Disable rank button if job details incomplete
+                if (rankBtn) {
+                    rankBtn.disabled = true;
+                }
+            }
+        }
+
+        // File Upload Handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('resumeFile');
+
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                handleFileSelection(files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleFileSelection(files);
+            });
+        }
+
+        function handleFileSelection(files) {
+            const validFiles = files.filter(file => {
+                const extension = file.name.split('.').pop().toLowerCase();
+                return extension === 'pdf' || extension === 'docx';
+            });
+
+            if (validFiles.length !== files.length) {
+                showAlert('Some files were ignored. Only PDF and DOCX files are allowed.', 'danger');
+            }
+
+            selectedFiles = [...selectedFiles, ...validFiles];
+            updateFileList();
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (selectedFiles.length > 0 && uploadBtn) {
+                uploadBtn.disabled = false;
+            }
+        }
+
+        // Update File List Display
+        function updateFileList() {
+            const uploadedFilesDiv = document.getElementById('uploadedFiles');
+            if (!uploadedFilesDiv) return;
+            
+            uploadedFilesDiv.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div>
+                        <i class="fas fa-file-${file.name.endsWith('.pdf') ? 'pdf' : 'word'} me-2"></i>
+                        <span>${file.name}</span>
+                        <small class="text-muted ms-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="removeFile(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                uploadedFilesDiv.appendChild(fileItem);
+            });
+        }
+
+        // Remove File
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (selectedFiles.length === 0 && uploadBtn) {
+                uploadBtn.disabled = true;
+            }
+        }
+
+        // Upload Resumes Function
+        async function uploadResumes() {
+            console.log('🔍 uploadResumes() called');
+            console.log('   selectedFiles.length:', selectedFiles.length);
+            console.log('   Stack trace:', new Error().stack);
+            
+            if (selectedFiles.length === 0) {
+                console.log('❌ No files selected, showing alert');
+                showAlert('Please select files to upload', 'danger');
+                return;
+            }
+
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadStatus = document.getElementById('uploadStatus');
+            
+            // Double-check that button is not disabled
+            if (uploadBtn && uploadBtn.disabled) {
+                console.log('❌ Upload button is disabled, aborting');
+                showAlert('Please select files first', 'warning');
+                return;
+            }
+            
+            try {
+                // Save selected files before clearing session
+                const filesToUpload = [...selectedFiles];
+                console.log('📁 Saved', filesToUpload.length, 'files for upload');
+                
+                // Clear any existing session before uploading new resumes
+                await clearCurrentSession();
+                
+                if (uploadBtn) {
+                    uploadBtn.disabled = true;
+                    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+                }
+
+                const formData = new FormData();
+                filesToUpload.forEach(file => {
+                    formData.append('resumes', file);
+                });
+
+                // Final check before making API call
+                if (filesToUpload.length === 0) {
+                    console.log('❌ No files to upload, aborting API call');
+                    showAlert('No files selected for upload', 'danger');
+                    return;
+                }
+
+                console.log('📤 Making upload API call with', filesToUpload.length, 'files');
+
+                const response = await fetch('/api/upload-resumes', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    uploadedFiles = result.uploaded_files || [];
+                    currentSessionId = result.session_id;  // Store session ID
+                    
+                    console.log(`Uploaded ${uploadedFiles.length} files for session ${currentSessionId}`);
+                    
+                    if (uploadStatus) {
+                        uploadStatus.innerHTML = `
+                            <div class="alert-custom alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Successfully uploaded ${filesToUpload.length} resume(s) for current job
+                            </div>
+                        `;
+                    }
+                    
+                    // Enable rank button
+                    const rankBtn = document.getElementById('rankBtn');
+                    if (rankBtn) {
+                        rankBtn.disabled = false;
+                    }
+                    
+                    showAlert(`Successfully uploaded ${uploadedFiles.length} resume(s) for current job!`, 'success');
+                } else {
+                    showAlert(result.error || 'Upload failed', 'danger');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('Upload failed. Please try again.', 'danger');
+            } finally {
+                if (uploadBtn) {
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Resumes';
+                }
+            }
+        }
+
+        // Rank Resumes Function
+        async function rankResumes() {
+            if (!jobDescription.trim()) {
+                showAlert('Please complete job description first', 'danger');
+                return;
+            }
+
+            const rankBtn = document.getElementById('rankBtn');
+            const loadingSection = document.getElementById('loadingSection');
+            
+            try {
+                if (rankBtn) {
+                    rankBtn.disabled = true;
+                    rankBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ranking...';
+                }
+                
+                if (loadingSection) {
+                    loadingSection.style.display = 'block';
+                }
+
+                console.log(`Ranking resumes for job: ${jobPosition}`);
+
+                const response = await fetch('/api/rank-resumes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        job_position: jobPosition,
+                        job_title: jobTitle,
+                        job_description: jobDescription,
+                        session_id: currentSessionId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log('Ranking result:', result);
+                    
+                    if (result.rankings && Array.isArray(result.rankings)) {
+                        const mode = result.mode || 'session';
+                        const resumeCount = result.rankings.length;
+                        
+                        console.log('🔄 About to call displayResultsTable with:', result.rankings);
+                        displayResultsTable(result.rankings);
+                        console.log('✅ displayResultsTable call completed');
+                        
+                        if (mode === 'legacy') {
+                            showAlert(`Resume ranking completed! Ranked ${resumeCount} existing resumes for "${jobPosition}" (Legacy Mode)`, 'success');
+                        } else {
+                            showAlert(`Resume ranking completed! Ranked ${resumeCount} resumes for "${jobPosition}"`, 'success');
+                        }
+                    } else {
+                        console.error('Invalid ranking result structure:', result);
+                        showAlert('Ranking completed but results format is invalid', 'warning');
+                    }
+                } else {
+                    console.error('Ranking API error:', result);
+                    showAlert(result.error || 'Ranking failed', 'danger');
+                }
+            } catch (error) {
+                console.error('Ranking error:', error);
+                showAlert('Ranking failed. Please try again.', 'danger');
+            } finally {
+                if (rankBtn) {
+                    rankBtn.disabled = false;
+                    rankBtn.innerHTML = '<i class="fas fa-chart-line me-2"></i>Rank Resumes';
+                }
+                
+                if (loadingSection) {
+                    loadingSection.style.display = 'none';
+                }
+            }
+        }
+
+        // Display Results Table - Simplified and Robust Version
+        function displayResultsTable(rankings) {
+            console.log('🔍 displayResultsTable called with rankings:', rankings);
+            
+            // Validate input
+            if (!rankings || !Array.isArray(rankings)) {
+                console.error('❌ Invalid rankings data:', rankings);
+                showAlert('Invalid ranking data received', 'danger');
+                return;
+            }
+            
+            // Get DOM elements
+            const resultsSection = document.getElementById('resultsSection');
+            const jobSummary = document.getElementById('jobSummary');
+            const tableBody = document.getElementById('resultsTableBody');
+            
+            console.log('🔍 DOM elements check:', {
+                resultsSection: !!resultsSection,
+                jobSummary: !!jobSummary,
+                tableBody: !!tableBody
+            });
+            
+            // Additional debugging for missing tableBody
+            if (!tableBody) {
+                console.error('❌ resultsTableBody element not found');
+                console.log('🔍 Searching for all table elements...');
+                const allTables = document.querySelectorAll('table');
+                console.log('Found tables:', allTables.length);
+                allTables.forEach((table, index) => {
+                    console.log(`Table ${index}:`, table.id, table.className);
+                    const tbody = table.querySelector('tbody');
+                    if (tbody) {
+                        console.log(`  - tbody id: "${tbody.id}"`);
+                    }
+                });
+                
+                console.log('🔍 Searching for resultsSection...');
+                if (resultsSection) {
+                    console.log('resultsSection found, checking its content...');
+                    const tablesInResults = resultsSection.querySelectorAll('table');
+                    console.log('Tables in resultsSection:', tablesInResults.length);
+                    tablesInResults.forEach((table, index) => {
+                        console.log(`Results table ${index}:`, table.id);
+                        const tbody = table.querySelector('tbody');
+                        if (tbody) {
+                            console.log(`  - tbody id: "${tbody.id}"`);
+                        }
+                    });
+                }
+                
+                showAlert('Results table not found in page', 'danger');
+                return;
+            }
+            
+            try {
+                // Store rankings globally for development plan access
+                window.currentRankingResults = rankings;
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+                console.log('✅ Results section made visible');
+                
+                // Update job summary
+                if (jobSummary) {
+                    const summaryText = `
+                        <strong>Job Analysis Complete:</strong> ${jobPosition || 'Unknown Position'} - ${jobTitle || 'Unknown Title'}<br>
+                        <small>Analyzed ${rankings.length} resume(s) against job requirements</small>
+                    `;
+                    jobSummary.innerHTML = summaryText;
+                    console.log('✅ Job summary updated');
+                }
+                
+                // Clear existing table content
+                tableBody.innerHTML = '';
+                console.log('✅ Table body cleared');
+                
+                // Add each ranking result
+                console.log(`🔄 Processing ${rankings.length} ranking results...`);
+                
+                rankings.forEach((candidate, index) => {
+                    try {
+                        console.log(`🔄 Processing candidate ${index + 1}:`, candidate.filename);
+                        
+                        // Create table row
+                        const row = createSimpleResultRow(candidate, index + 1);
+                        
+                        if (row) {
+                            tableBody.appendChild(row);
+                            console.log(`✅ Added row for candidate ${index + 1}: ${candidate.filename}`);
+                        } else {
+                            console.error(`❌ Failed to create row for candidate ${index + 1}`);
+                        }
+                        
+                    } catch (rowError) {
+                        console.error(`❌ Error processing candidate ${index + 1}:`, rowError);
+                        console.error('Candidate data:', candidate);
+                    }
+                });
+                
+                console.log('✅ All ranking results processed successfully');
+                
+                // Scroll to results
+                setTimeout(() => {
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                    console.log('✅ Scrolled to results section');
+                }, 100);
+                
+                // Show success message
+                showAlert(`Successfully displayed ${rankings.length} ranking results!`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error in displayResultsTable:', error);
+                showAlert('Failed to display ranking results', 'danger');
+            }
+        }
+
+        // Create Simple Result Row - Robust Version
+        function createSimpleResultRow(candidate, rank) {
+            console.log(`🔍 createSimpleResultRow called for rank ${rank}:`, candidate);
+            
+            try {
+                // Validate candidate data
+                if (!candidate) {
+                    console.error('❌ No candidate data provided');
+                    return null;
+                }
+                
+                // Extract data with fallbacks
+                const filename = candidate.filename || 'Unknown Resume';
+                const matchScore = candidate.match_score || 0;
+                const candidateName = candidate.candidate_name || 'Unknown Candidate';
+                const recommendedSkills = candidate.recommended_skills || [];
+                const missingSkills = candidate.missing_skills || [];
+                
+                console.log(`🔍 Extracted data - File: ${filename}, Score: ${matchScore}%, Skills: ${recommendedSkills.length}`);
+                
+                // Create table row
+                const row = document.createElement('tr');
+                
+                // Format recommended skills - Make them prominent
+                let skillsHtml = '<span class="text-muted">No recommendations</span>';
+                if (recommendedSkills.length > 0) {
+                    const skillNames = recommendedSkills.map(skill => {
+                        const skillName = skill.skill || skill.name || skill;
+                        const priority = skill.priority || 'medium';
+                        return `<span class="badge bg-primary me-1 mb-1" style="font-size: 0.9rem; padding: 0.4rem 0.6rem;">${skillName}</span>`;
+                    }).join('');
+                    skillsHtml = skillNames;
+                }
+                
+                // Create row HTML
+                row.innerHTML = `
+                    <td class="text-center">
+                        <span class="badge bg-success fs-6">${rank}</span>
+                    </td>
+                    <td>
+                        <strong>${filename}</strong><br>
+                        <small class="text-muted">${candidateName}</small>
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="progress me-2" style="width: 80px; height: 10px;">
+                                <div class="progress-bar bg-info" style="width: ${matchScore}%"></div>
+                            </div>
+                            <strong>${matchScore.toFixed(1)}%</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="max-width: 300px;">
+                            <strong class="text-info d-block mb-2">Recommended Skills:</strong>
+                            ${skillsHtml}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-warning" onclick="showDevelopmentPlan('${filename}')">
+                            <i class="fas fa-graduation-cap"></i> Plan
+                        </button>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-info" onclick="viewResume('${filename}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group-vertical btn-group-sm">
+                            <button class="btn btn-outline-danger btn-sm mb-1" onclick="downloadResume('${filename}', 'pdf')" title="Download PDF">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm mb-1" onclick="downloadResume('${filename}', 'docx')" title="Download DOCX">
+                                <i class="fas fa-file-word"></i> DOCX
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="printResume('${filename}')" title="Print">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                console.log(`✅ Created row HTML for ${filename}`);
+                return row;
+                
+            } catch (error) {
+                console.error(`❌ Error in createSimpleResultRow for rank ${rank}:`, error);
+                console.error('Candidate data:', candidate);
+                return null;
+            }
+        }
+
+        // View Resume Function
+        async function viewResume(filename) {
+            try {
+                const response = await fetch(`/api/view-resume/${encodeURIComponent(filename)}`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const modal = new bootstrap.Modal(document.getElementById('resumeModal'));
+                    const modalTitle = document.getElementById('resumeModalTitle');
+                    const resumeContent = document.getElementById('resumeContent');
+                    
+                    if (modalTitle) modalTitle.textContent = filename;
+                    if (resumeContent) resumeContent.textContent = result.content;
+                    
+                    modal.show();
+                } else {
+                    showAlert(result.error || 'Failed to load resume', 'danger');
+                }
+            } catch (error) {
+                console.error('View resume error:', error);
+                showAlert('Failed to load resume content', 'danger');
+            }
+        }
+
+        // Download Resume Function
+        async function downloadResume(filename, format) {
+            try {
+                showAlert(`Preparing ${format.toUpperCase()} download...`, 'info');
+                
+                const response = await fetch(`/api/download-resume/${encodeURIComponent(filename)}/${format}`);
+                
+                if (response.ok) {
+                    // Create blob from response
+                    const blob = await response.blob();
+                    
+                    // Create download link
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    
+                    // Set filename
+                    const filenameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+                    a.download = `${filenameWithoutExt}.${format}`;
+                    
+                    // Trigger download
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // Cleanup
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showAlert(`${format.toUpperCase()} downloaded successfully!`, 'success');
+                } else {
+                    const result = await response.json();
+                    showAlert(result.error || `Failed to download ${format.toUpperCase()}`, 'danger');
+                }
+            } catch (error) {
+                console.error('Download resume error:', error);
+                showAlert(`Failed to download ${format.toUpperCase()}`, 'danger');
+            }
+        }
+
+        // Print Resume Function
+        async function printResume(filename) {
+            try {
+                const response = await fetch(`/api/print-resume/${encodeURIComponent(filename)}`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Create print window
+                    const printWindow = window.open('', '_blank');
+                    
+                    // Generate print-friendly HTML
+                    const printContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Print Resume - ${result.filename}</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    line-height: 1.6;
+                                    margin: 20px;
+                                    color: #333;
+                                }
+                                h1 {
+                                    color: #2c3e50;
+                                    border-bottom: 2px solid #3498db;
+                                    padding-bottom: 10px;
+                                }
+                                .content {
+                                    white-space: pre-wrap;
+                                    font-size: 12px;
+                                }
+                                @media print {
+                                    body { margin: 0; }
+                                    .no-print { display: none; }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Resume: ${result.candidate_name || result.filename}</h1>
+                            <div class="content">${result.content}</div>
+                        </body>
+                        </html>
+                    `;
+                    
+                    printWindow.document.write(printContent);
+                    printWindow.document.close();
+                    
+                    // Add print functionality after document is loaded
+                    printWindow.onload = function() {
+                        printWindow.print();
+                        printWindow.onafterprint = function() {
+                            printWindow.close();
+                        };
+                    };
+                    
+                    showAlert('Print dialog opened', 'success');
+                } else {
+                    showAlert(result.error || 'Failed to prepare resume for printing', 'danger');
+                }
+            } catch (error) {
+                console.error('Print resume error:', error);
+                showAlert('Failed to print resume', 'danger');
+            }
+        }
+
+        // Development Plan Functions
+        function showDevelopmentPlan(filename) {
+            try {
+                console.log('🔍 Showing development plan for:', filename);
+                
+                // Find candidate data from the global candidates array
+                const candidateData = window.currentRankingResults?.find(c => c.filename === filename);
+                
+                if (!candidateData) {
+                    console.error('Candidate data not found for:', filename);
+                    showAlert('Failed to load development plan - candidate data not found', 'danger');
+                    return;
+                }
+                
+                console.log('Candidate data:', candidateData);
+                
+                const modal = new bootstrap.Modal(document.getElementById('developmentPlanModal'));
+                const modalTitle = document.getElementById('developmentPlanTitle');
+                const planContent = document.getElementById('developmentPlanContent');
+                
+                if (modalTitle) {
+                    const displayName = candidateData.candidate_name && candidateData.candidate_name !== 'Candidate Name Not Found' 
+                        ? candidateData.candidate_name 
+                        : filename;
+                    modalTitle.textContent = `Development Plan - ${displayName}`;
+                }
+                
+                if (planContent) {
+                    planContent.innerHTML = generateDevelopmentPlanHTML(candidateData);
+                }
+                
+                modal.show();
+            } catch (error) {
+                console.error('Development plan error:', error);
+                showAlert('Failed to load development plan', 'danger');
+            }
+        }
+
+        function generateDevelopmentPlanHTML(candidate) {
+            const missingSkills = candidate.missing_skills || [];
+            const existingSkills = candidate.existing_skills || [];
+            const recommendedSkills = candidate.recommended_skills || [];
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card bg-dark border-success mb-3">
+                            <div class="card-header bg-success">
+                                <h6 class="mb-0"><i class="fas fa-check-circle me-2"></i>Existing Strengths</h6>
+                            </div>
+                            <div class="card-body">
+                                ${existingSkills.length > 0 ? 
+                                    existingSkills.slice(0, 8).map(skill => `
+                                        <span class="badge bg-success me-1 mb-1">${skill.skill}</span>
+                                    `).join('') 
+                                    : '<p class="text-muted">No matching skills identified</p>'
+                                }
+                                ${existingSkills.length > 8 ? `<div class="mt-2"><small class="text-muted">+${existingSkills.length - 8} more skills</small></div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card bg-dark border-primary mb-3">
+                            <div class="card-header bg-primary">
+                                <h6 class="mb-0"><i class="fas fa-star me-2"></i>Recommended Skills for Growth</h6>
+                            </div>
+                            <div class="card-body">
+                                ${recommendedSkills.length > 0 ? 
+                                    recommendedSkills.slice(0, 8).map(skill => `
+                                        <div class="mb-3 p-2 border-start border-primary">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <strong class="text-primary">${skill.skill}</strong>
+                                                <span class="badge bg-primary">${skill.priority || 50}% Priority</span>
+                                            </div>
+                                            <small class="text-muted">${skill.category}</small>
+                                            <p class="mb-1 mt-1">${skill.reason}</p>
+                                        </div>
+                                    `).join('') 
+                                    : '<p class="text-muted">No skill recommendations available</p>'
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-dark border-info">
+                    <div class="card-header bg-info">
+                        <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Development Recommendations - Learning Resources</h6>
+                    </div>
+                    <div class="card-body">
+                        ${recommendedSkills.length > 0 ? `
+                            <p class="mb-3">Here are verified learning resources for each recommended skill:</p>
+                            ${recommendedSkills.slice(0, 10).map(skill => {
+                                const skillName = skill.skill || skill;
+                                const learningResources = getLearningResources(skillName);
+                                return `
+                                    <div class="mb-4 p-3 border rounded" style="border-color: rgba(255,255,255,0.1) !important;">
+                                        <h6 class="text-info mb-2"><i class="fas fa-graduation-cap me-2"></i>${skillName}</h6>
+                                        <div class="ms-3">
+                                            ${learningResources.map(resource => `
+                                                <div class="mb-2">
+                                                    <i class="fas fa-link me-2 text-primary"></i>
+                                                    <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                                                        <strong>${resource.platform}:</strong> ${resource.title}
+                                                    </a>
+                                                    <span class="badge bg-secondary ms-2">${resource.type}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        ` : '<p class="text-muted">No learning recommendations available at this time.</p>'}
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Function to get learning resources for each skill
+        function getLearningResources(skillName) {
+            const skill = skillName.toLowerCase();
+            
+            // Comprehensive learning resource database
+            const resourceMap = {
+                // Programming Languages
+                'python': [
+                    { platform: 'Coursera', title: 'Python for Everybody Specialization', url: 'https://www.coursera.org/specializations/python', type: 'Course' },
+                    { platform: 'freeCodeCamp', title: 'Python Tutorial for Beginners', url: 'https://www.youtube.com/watch?v=rfscVS0vtbw', type: 'Video' },
+                    { platform: 'Real Python', title: 'Python Tutorials', url: 'https://realpython.com/', type: 'Tutorial' }
+                ],
+                'javascript': [
+                    { platform: 'freeCodeCamp', title: 'JavaScript Algorithms and Data Structures', url: 'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/', type: 'Course' },
+                    { platform: 'MDN', title: 'JavaScript Guide', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide', type: 'Documentation' },
+                    { platform: 'JavaScript.info', title: 'The Modern JavaScript Tutorial', url: 'https://javascript.info/', type: 'Tutorial' }
+                ],
+                'java': [
+                    { platform: 'Coursera', title: 'Java Programming and Software Engineering', url: 'https://www.coursera.org/specializations/java-programming', type: 'Course' },
+                    { platform: 'Oracle', title: 'Java Tutorials', url: 'https://docs.oracle.com/javase/tutorial/', type: 'Documentation' },
+                    { platform: 'Codecademy', title: 'Learn Java', url: 'https://www.codecademy.com/learn/learn-java', type: 'Course' }
+                ],
+                'react': [
+                    { platform: 'React.dev', title: 'Official React Documentation', url: 'https://react.dev/learn', type: 'Documentation' },
+                    { platform: 'freeCodeCamp', title: 'React Course for Beginners', url: 'https://www.youtube.com/watch?v=bMknfKXIFA8', type: 'Video' },
+                    { platform: 'Scrimba', title: 'Learn React for Free', url: 'https://scrimba.com/learn/learnreact', type: 'Course' }
+                ],
+                'node.js': [
+                    { platform: 'Node.js', title: 'Official Node.js Guides', url: 'https://nodejs.org/en/docs/guides/', type: 'Documentation' },
+                    { platform: 'freeCodeCamp', title: 'Node.js and Express.js Course', url: 'https://www.youtube.com/watch?v=Oe421EPjeBE', type: 'Video' },
+                    { platform: 'Udemy', title: 'The Complete Node.js Developer Course', url: 'https://www.udemy.com/course/the-complete-nodejs-developer-course-2/', type: 'Course' }
+                ],
+                'sql': [
+                    { platform: 'SQLBolt', title: 'Learn SQL with Interactive Lessons', url: 'https://sqlbolt.com/', type: 'Tutorial' },
+                    { platform: 'Khan Academy', title: 'Intro to SQL', url: 'https://www.khanacademy.org/computing/computer-programming/sql', type: 'Course' },
+                    { platform: 'W3Schools', title: 'SQL Tutorial', url: 'https://www.w3schools.com/sql/', type: 'Tutorial' }
+                ],
+                'aws': [
+                    { platform: 'AWS', title: 'AWS Training and Certification', url: 'https://aws.amazon.com/training/', type: 'Course' },
+                    { platform: 'freeCodeCamp', title: 'AWS Certified Cloud Practitioner', url: 'https://www.youtube.com/watch?v=SOTamWNgDKc', type: 'Video' },
+                    { platform: 'A Cloud Guru', title: 'AWS Certification Courses', url: 'https://acloudguru.com/aws-cloud-training', type: 'Course' }
+                ],
+                'docker': [
+                    { platform: 'Docker', title: 'Docker Official Documentation', url: 'https://docs.docker.com/get-started/', type: 'Documentation' },
+                    { platform: 'freeCodeCamp', title: 'Docker Tutorial for Beginners', url: 'https://www.youtube.com/watch?v=fqMOX6JJhGo', type: 'Video' },
+                    { platform: 'Play with Docker', title: 'Interactive Docker Tutorial', url: 'https://www.docker.com/play-with-docker/', type: 'Tutorial' }
+                ],
+                'kubernetes': [
+                    { platform: 'Kubernetes', title: 'Official Kubernetes Tutorials', url: 'https://kubernetes.io/docs/tutorials/', type: 'Documentation' },
+                    { platform: 'freeCodeCamp', title: 'Kubernetes Course for Beginners', url: 'https://www.youtube.com/watch?v=X48VuDVv0do', type: 'Video' },
+                    { platform: 'KodeKloud', title: 'Kubernetes for Beginners', url: 'https://kodekloud.com/courses/kubernetes-for-the-absolute-beginners/', type: 'Course' }
+                ],
+                'git': [
+                    { platform: 'GitHub', title: 'Git Handbook', url: 'https://guides.github.com/introduction/git-handbook/', type: 'Documentation' },
+                    { platform: 'Atlassian', title: 'Learn Git with Bitbucket Cloud', url: 'https://www.atlassian.com/git/tutorials', type: 'Tutorial' },
+                    { platform: 'freeCodeCamp', title: 'Git and GitHub for Beginners', url: 'https://www.youtube.com/watch?v=RGOj5yH7evk', type: 'Video' }
+                ],
+                'machine learning': [
+                    { platform: 'Coursera', title: 'Machine Learning by Andrew Ng', url: 'https://www.coursera.org/learn/machine-learning', type: 'Course' },
+                    { platform: 'Google', title: 'Machine Learning Crash Course', url: 'https://developers.google.com/machine-learning/crash-course', type: 'Course' },
+                    { platform: 'Fast.ai', title: 'Practical Deep Learning', url: 'https://course.fast.ai/', type: 'Course' }
+                ],
+                'data analysis': [
+                    { platform: 'Coursera', title: 'Google Data Analytics Certificate', url: 'https://www.coursera.org/professional-certificates/google-data-analytics', type: 'Course' },
+                    { platform: 'DataCamp', title: 'Data Analyst with Python', url: 'https://www.datacamp.com/tracks/data-analyst-with-python', type: 'Course' },
+                    { platform: 'Khan Academy', title: 'Statistics and Probability', url: 'https://www.khanacademy.org/math/statistics-probability', type: 'Course' }
+                ],
+                'agile': [
+                    { platform: 'Scrum.org', title: 'Scrum Guide', url: 'https://www.scrum.org/resources/scrum-guide', type: 'Documentation' },
+                    { platform: 'Atlassian', title: 'Agile Coach', url: 'https://www.atlassian.com/agile', type: 'Tutorial' },
+                    { platform: 'Coursera', title: 'Agile Development Specialization', url: 'https://www.coursera.org/specializations/agile-development', type: 'Course' }
+                ],
+                'communication': [
+                    { platform: 'Coursera', title: 'Improving Communication Skills', url: 'https://www.coursera.org/learn/wharton-communication-skills', type: 'Course' },
+                    { platform: 'LinkedIn Learning', title: 'Communication Foundations', url: 'https://www.linkedin.com/learning/communication-foundations', type: 'Course' },
+                    { platform: 'Toastmasters', title: 'Public Speaking Skills', url: 'https://www.toastmasters.org/', type: 'Organization' }
+                ],
+                'leadership': [
+                    { platform: 'Coursera', title: 'Inspiring Leadership through Emotional Intelligence', url: 'https://www.coursera.org/learn/emotional-intelligence-leadership', type: 'Course' },
+                    { platform: 'edX', title: 'Leadership Principles', url: 'https://www.edx.org/learn/leadership', type: 'Course' },
+                    { platform: 'Harvard Business Review', title: 'Leadership Articles', url: 'https://hbr.org/topic/leadership', type: 'Articles' }
+                ]
+            };
+            
+            // Check for exact match
+            if (resourceMap[skill]) {
+                return resourceMap[skill];
+            }
+            
+            // Check for partial match
+            for (const [key, resources] of Object.entries(resourceMap)) {
+                if (skill.includes(key) || key.includes(skill)) {
+                    return resources;
+                }
+            }
+            
+            // Default generic resources
+            return [
+                { platform: 'Coursera', title: `${skillName} Courses`, url: `https://www.coursera.org/search?query=${encodeURIComponent(skillName)}`, type: 'Course' },
+                { platform: 'YouTube', title: `${skillName} Tutorials`, url: `https://www.youtube.com/results?search_query=${encodeURIComponent(skillName + ' tutorial')}`, type: 'Video' },
+                { platform: 'Udemy', title: `${skillName} Training`, url: `https://www.udemy.com/courses/search/?q=${encodeURIComponent(skillName)}`, type: 'Course' }
+            ];
+        }
+
+        function exportDevelopmentPlan() {
+            try {
+                const planContent = document.getElementById('developmentPlanContent');
+                const candidateName = document.getElementById('developmentPlanTitle').textContent.replace('Development Plan - ', '');
+                
+                if (planContent) {
+                    const textContent = planContent.innerText;
+                    const blob = new Blob([textContent], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${candidateName}_Development_Plan.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    showAlert('Development plan exported successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+                showAlert('Failed to export development plan', 'danger');
+            }
+        }
+
+        // Reset Form
+        function resetForm() {
+            // Reset global variables
+            selectedFiles = [];
+            uploadedFiles = [];
+            jobPosition = '';
+            jobTitle = '';
+            jobDescription = '';
+            descriptionMethod = '';
+            
+            // Reset form elements
+            const jobPositionSelect = document.getElementById('jobPosition');
+            const jobTitleInput = document.getElementById('jobTitle');
+            const jobDescTextarea = document.getElementById('jobDescription');
+            const aiJobDescTextarea = document.getElementById('aiJobDescription');
+            const fileInput = document.getElementById('resumeFile');
+            
+            if (jobPositionSelect) jobPositionSelect.value = '';
+            if (jobTitleInput) jobTitleInput.value = '';
+            if (jobDescTextarea) jobDescTextarea.value = '';
+            if (aiJobDescTextarea) aiJobDescTextarea.value = '';
+            if (fileInput) fileInput.value = '';
+            
+            // Reset method cards
+            const manualCard = document.getElementById('manualCard');
+            const aiCard = document.getElementById('aiCard');
+            if (manualCard) manualCard.classList.remove('selected');
+            if (aiCard) aiCard.classList.remove('selected');
+            
+            // Hide sections
+            hideAllSections();
+            
+            // Reset buttons
+            const uploadBtn = document.getElementById('uploadBtn');
+            const rankBtn = document.getElementById('rankBtn');
+            if (uploadBtn) uploadBtn.disabled = true;
+            if (rankBtn) rankBtn.disabled = true;
+            
+            // Clear file list and status
+            const uploadedFilesDiv = document.getElementById('uploadedFiles');
+            const uploadStatus = document.getElementById('uploadStatus');
+            if (uploadedFilesDiv) uploadedFilesDiv.innerHTML = '';
+            if (uploadStatus) uploadStatus.innerHTML = '';
+        }
+
+        // Start Over Function
+        function startOver() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) {
+                resultsSection.style.display = 'none';
+            }
+            
+            resetForm();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            showAlert('Dashboard reset. You can start a new analysis.', 'info');
+        }
+
+        // Show Alert Function
+        function showAlert(message, type = 'info') {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-floating');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-floating`;
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            `;
+            
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'danger' ? 'exclamation-triangle' : 
+                        type === 'warning' ? 'exclamation-circle' : 'info-circle';
+            
+            alert.innerHTML = `
+                <i class="fas fa-${icon} me-2"></i>${message}
+                <button type="button" class="btn-close btn-close-white float-end" onclick="this.parentElement.remove()"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Logout Function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/api/logout', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Logout successful:', data);
+                    // Redirect to landing page
+                    window.location.href = '/';
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    // Redirect to landing page even if API fails
+                    window.location.href = '/';
+                });
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Job title input listener
+            const jobTitleInput = document.getElementById('jobTitle');
+            if (jobTitleInput) {
+                jobTitleInput.addEventListener('input', function() {
+                    jobTitle = this.value.trim();
+                    checkFormCompletion();
+                });
+            }
+            
+            // Manual description listener
+            const jobDescTextarea = document.getElementById('jobDescription');
+            if (jobDescTextarea) {
+                jobDescTextarea.addEventListener('input', function() {
+                    if (descriptionMethod === 'manual') {
+                        jobDescription = this.value.trim();
+                        checkFormCompletion();
+                    }
+                });
+            }
+            
+            // AI description listener
+            const aiJobDescTextarea = document.getElementById('aiJobDescription');
+            if (aiJobDescTextarea) {
+                aiJobDescTextarea.addEventListener('input', function() {
+                    if (descriptionMethod === 'ai') {
+                        jobDescription = this.value.trim();
+                        checkFormCompletion();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration | ResumeRanker AI Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --main-cyan: #00d2ff; --deep-sky: #3a7bd5; --dark-core: #050b18; --alert-red: #ff4b5c; --neon-green: #00ff88; }
+        body { background: radial-gradient(circle at top right, #101d33, var(--dark-core)); color: white; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 40px; }
+        .register-container { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 45px; width: 100%; max-width: 580px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); }
+        .heading-title { color: var(--main-cyan); font-weight: 800; text-transform: uppercase; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
+        
+        /* TERA NOTIFICATION ALERT BOX */
+        .flash-msg { background: rgba(255, 75, 92, 0.2); border: 2px solid var(--alert-red); color: #ffbabb; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-weight: 700; animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+        /* INPUT FIELD ERROR HIGHLIGHTING */
+        .input-box.error { border-color: var(--alert-red) !important; box-shadow: 0 0 10px rgba(255, 75, 92, 0.3) !important; }
+        .input-box.error:focus { border-color: var(--alert-red) !important; box-shadow: 0 0 15px rgba(255, 75, 92, 0.5) !important; }
+
+        .input-group-custom { position: relative; margin-bottom: 25px; }
+        .field-label { font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px; display: block; font-weight: 700; }
+        .input-box { background: rgba(15, 23, 42, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; color: white !important; border-radius: 12px !important; padding: 15px !important; width: 100%; }
+        
+        /* EYE ICON BUTTONS */
+        .eye-btn { position: absolute; right: 18px; top: 45px; color: #64748b; cursor: pointer; z-index: 10; font-size: 1.1rem; }
+        .eye-btn:hover { color: var(--main-cyan); }
+
+        .requirement-box { margin-top: 15px; background: rgba(0, 0, 0, 0.2); padding: 18px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .check-status { font-size: 0.8rem; margin-top: 6px; display: block; font-weight: 600; }
+        .valid-mark { color: var(--neon-green); }
+        .invalid-mark { color: var(--alert-red); }
+        
+        .btn-register { background: linear-gradient(45deg, var(--main-cyan), var(--deep-sky)); border: none; border-radius: 15px; padding: 18px; font-weight: 800; color: white; width: 100%; margin-top: 25px; }
+        .btn-register:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+        .footer-link { text-align: center; margin-top: 25px; }
+        .footer-link a { color: var(--main-cyan); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2 class="heading-title">Create Account</h2>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash-msg">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form id="mainForm">
+            <div class="input-group-custom">
+                <label class="field-label">FULL NAME</label>
+                <input type="text" name="fullname" id="fullname" class="input-box" required>
+            </div>
+            <div class="input-group-custom">
+                <label class="field-label">USERNAME</label>
+                <input type="text" id="username" name="username" class="input-box" required>
+            </div>
+            <div class="input-group-custom">
+                <label class="field-label">SELECT ROLE</label>
+                <select id="role" name="role" class="input-box" required>
+                    <option value="">Choose your role...</option>
+                    <option value="Recruiter">Recruiter</option>
+                </select>
+            </div>
+            <div class="input-group-custom">
+                <label class="field-label">PASSWORD</label>
+                <input type="password" id="password" name="password" class="input-box" required>
+                <i class="fa fa-eye eye-btn" id="eye1" onclick="togglePass('password', 'eye1')"></i>
+                <div class="requirement-box row mx-0">
+                    <div class="col-6"><span id="r_len" class="check-status invalid-mark">✖ 8+ Symbols</span></div>
+                    <div class="col-6"><span id="r_up" class="check-status invalid-mark">✖ Uppercase</span></div>
+                    <div class="col-6"><span id="r_lo" class="check-status invalid-mark">✖ Lowercase</span></div>
+                    <div class="col-6"><span id="r_nu" class="check-status invalid-mark">✖ Numbers</span></div>
+                    <div class="col-12"><span id="r_sp" class="check-status invalid-mark">✖ Special Character</span></div>
+                </div>
+            </div>
+            <div class="input-group-custom">
+                <label class="field-label">CONFIRM PASSWORD</label>
+                <input type="password" id="confirm" name="confirm_password" class="input-box" required>
+                <i class="fa fa-eye eye-btn" id="eye2" onclick="togglePass('confirm', 'eye2')"></i>
+                <span id="match_msg" class="check-status mt-2"></span>
+            </div>
+            <button type="submit" id="regBtn" class="btn-register" disabled>REGISTER NOW</button>
+        </form>
+        <div class="footer-link">Already have an account? <a href="/login">Login Here</a></div>
+    </div>
+
+    <script>
+        const u = document.getElementById('username'), p = document.getElementById('password'), 
+              c = document.getElementById('confirm'), btn = document.getElementById('regBtn'),
+              mMsg = document.getElementById('match_msg'), form = document.getElementById('mainForm');
+
+        function togglePass(id, eyeId) {
+            const f = document.getElementById(id);
+            const e = document.getElementById(eyeId);
+            f.type = f.type === "password" ? "text" : "password";
+            e.classList.toggle('fa-eye-slash');
+        }
+
+        function set(id, ok, txt) {
+            const el = document.getElementById(id);
+            el.innerHTML = (ok ? "✔ " : "✖ ") + txt;
+            el.className = "check-status " + (ok ? "valid-mark" : "invalid-mark");
+            return ok;
+        }
+
+        function validate() {
+            const v1 = set('r_len', p.value.length >= 8, "8+ Symbols");
+            const v2 = set('r_up', /[A-Z]/.test(p.value), "Uppercase");
+            const v3 = set('r_lo', /[a-z]/.test(p.value), "Lowercase");
+            const v4 = set('r_nu', /[0-9]/.test(p.value), "Numbers");
+            const v5 = set('r_sp', /[@$!%*?&]/.test(p.value), "Special Character");
+            const isMatch = (p.value === c.value && c.value !== "");
+
+            if(c.value !== "") {
+                mMsg.innerText = isMatch ? "✔ Passwords Match" : "✖ Passwords Mismatch";
+                mMsg.className = "check-status " + (isMatch ? "valid-mark" : "invalid-mark");
+            } else { mMsg.innerText = ""; }
+
+            const isFormValid = v1 && v2 && v3 && v4 && v5 && isMatch && u.value.length >= 3 && 
+                               document.getElementById('fullname').value.length >= 2 && 
+                               document.getElementById('role').value !== "";
+            btn.disabled = !isFormValid;
+            
+            return isFormValid;
+        }
+
+        [u, p, c, document.getElementById('fullname'), document.getElementById('role')].forEach(i => i.addEventListener('input', validate));
+        document.getElementById('role').addEventListener('change', validate);
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                fullname: document.getElementById('fullname').value,
+                username: u.value,
+                password: p.value,
+                confirm_password: c.value,
+                role: document.getElementById('role').value
+            };
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = 'REGISTERING...';
+
+                // Remove any existing error messages
+                const existingErrors = document.querySelectorAll('.flash-msg');
+                existingErrors.forEach(error => error.remove());
+
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success - show message and redirect
+                    const flashDiv = document.createElement('div');
+                    flashDiv.className = 'flash-msg';
+                    flashDiv.style.background = 'rgba(0, 255, 136, 0.2)';
+                    flashDiv.style.borderColor = '#00ff88';
+                    flashDiv.style.color = '#88ffaa';
+                    flashDiv.innerHTML = '✅ ' + result.message;
+                    
+                    form.parentNode.insertBefore(flashDiv, form);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                } else {
+                    // Error - show error message but preserve form data
+                    const flashDiv = document.createElement('div');
+                    flashDiv.className = 'flash-msg';
+                    flashDiv.innerHTML = '❌ ' + result.error;
+                    
+                    form.parentNode.insertBefore(flashDiv, form);
+                    
+                    // Special handling for "User already exists" - highlight username field
+                    if (result.error === "User already exists") {
+                        u.classList.add('error');
+                        u.focus();
+                        
+                        // Reset error styling when user starts typing
+                        u.addEventListener('input', function resetError() {
+                            u.classList.remove('error');
+                            u.removeEventListener('input', resetError);
+                        });
+                    }
+                    
+                    // Auto-remove error message after 5 seconds
+                    setTimeout(() => {
+                        flashDiv.remove();
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                
+                // Remove any existing error messages
+                const existingErrors = document.querySelectorAll('.flash-msg');
+                existingErrors.forEach(error => error.remove());
+                
+                const flashDiv = document.createElement('div');
+                flashDiv.className = 'flash-msg';
+                flashDiv.innerHTML = '❌ Registration failed. Please try again.';
+                
+                form.parentNode.insertBefore(flashDiv, form);
+                
+                setTimeout(() => {
+                    flashDiv.remove();
+                }, 5000);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'REGISTER NOW';
+                validate(); // Re-validate to enable/disable button properly
+            }
+        });
+    </script>
+</body>
+</html>
