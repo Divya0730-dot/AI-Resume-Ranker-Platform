@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ResumeRanker AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --bg: #050b18; }
+        body { 
+            background: radial-gradient(circle at top right, #101d33, var(--bg)); 
+            color: #e2e8f0; font-family: 'Poppins', sans-serif; 
+            display: flex; align-items: center; min-height: 100vh; margin: 0;
+        }
+        .unique-card { 
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; 
+            padding: 45px; width: 100%; max-width: 420px; margin: auto;
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.1);
+        }
+        .form-control { 
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #fff; border-radius: 12px; padding: 12px; transition: 0.4s;
+        }
+        .form-control:focus { 
+            background: rgba(15, 23, 42, 0.8); border-color: var(--primary); 
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); color: #fff;
+        }
+        .input-group-text { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-left: none; cursor: pointer; color: #94a3b8; }
+        .btn-neon { 
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none; border-radius: 12px; padding: 15px; font-weight: 700;
+            color: white; width: 100%; transition: 0.3s; margin-top: 20px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .alert-custom { 
+            background: rgba(255, 75, 92, 0.1); border: 1px solid #ff4b5c; 
+            color: #ff4b5c; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem; text-align: center;
+        }
+        .footer-text { color: #ffffff !important; }
+        .footer-link { color: var(--primary) !important; text-decoration: none; font-weight: 700; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <div class="unique-card">
+        <h2 class="text-center fw-bold mb-4" style="color: var(--primary);">WELCOME BACK</h2>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert-custom"> <i class="fa fa-lock me-2"></i> {{ message }} </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="loginUsername" class="form-label text-light fw-semibold">Username</label>
+                <input type="text" name="username" id="loginUsername" class="form-control" placeholder="Enter your username" required>
+            </div>
+            <div class="mb-3">
+                <label for="lp" class="form-label text-light fw-semibold">Password</label>
+                <div class="input-group">
+                    <input type="password" id="lp" name="password" class="form-control" placeholder="Enter your password" style="border-right:none;" required>
+                    <span class="input-group-text" onclick="toggleL()"><i class="fa fa-eye" id="li"></i></span>
+                </div>
+            </div>
+            <button type="submit" id="loginBtn" class="btn btn-neon">Login</button>
+        </form>
+
+        <div class="text-center mt-4">
+            <span class="footer-text">Don't have an account?</span>
+            <a href="/register" class="footer-link text-uppercase">Register</a>
+        </div>
+    </div>
+    <script>
+        function toggleL() {
+            const p = document.getElementById('lp'); const i = document.getElementById('li');
+            p.type = p.type === 'password' ? 'text' : 'password';
+            i.classList.toggle('fa-eye-slash');
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('lp').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            // Basic client-side validation
+            if (!username || !password) {
+                showLoginError('Please enter both username and password');
+                return;
+            }
+
+            try {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = 'LOGGING IN...';
+
+                // Remove any existing error messages
+                const existingAlert = document.querySelector('.alert-custom');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success - recruiter login only
+                    showLoginSuccess('Login successful! Redirecting to dashboard...');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                } else {
+                    // Error - show error message and stay on page
+                    showLoginError(result.error);
+                    
+                    // Clear password field for security
+                    document.getElementById('lp').value = '';
+                    document.getElementById('loginUsername').focus();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError('Login failed. Please check your connection and try again.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login';
+            }
+        });
+
+        function showLoginError(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert-custom';
+            alertDiv.innerHTML = '<i class="fa fa-lock me-2"></i> ' + message;
+            
+            const form = document.getElementById('loginForm');
+            form.parentNode.insertBefore(alertDiv, form);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function showLoginSuccess(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert-custom';
+            alertDiv.style.background = 'rgba(0, 255, 136, 0.1)';
+            alertDiv.style.borderColor = '#00ff88';
+            alertDiv.style.color = '#00ff88';
+            alertDiv.innerHTML = '<i class="fa fa-check me-2"></i> ' + message;
+            
+            const form = document.getElementById('loginForm');
+            form.parentNode.insertBefore(alertDiv, form);
+        }
+    </script>
+</body>
+</html>
